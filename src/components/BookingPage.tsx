@@ -180,9 +180,9 @@ export default function BookingPage({
   // Estimated duration in minutes
   const estimatedDuration = Math.max(45, selectedServices.length * 40);
 
-  // Dynamic Apriori Recommendations based on selected motifs
+  // Dynamic Apriori Recommendations based on selected motifs (requires > 1 selected service)
   const dynamicAprioriRecommendations = React.useMemo(() => {
-    if (selectedServices.length === 0) return [];
+    if (selectedServices.length <= 1) return [];
 
     const activeRules = recommendations?.recommendations && recommendations.recommendations.length > 0
       ? recommendations.recommendations
@@ -287,11 +287,10 @@ export default function BookingPage({
     return items.sort((a, b) => b.score - a.score);
   }, [selectedServices, designs, recommendations]);
 
-  // Synchronize Apriori AI Smart Upsell in sidebar
+  // Synchronize Apriori AI Smart Upsell in sidebar (only show when > 1 service is selected)
   useEffect(() => {
-    if (selectedServices.length === 0) {
-      const unselected = designs.filter(d => !selectedServices.includes(d.id));
-      setUpsellSuggestion(unselected.length > 0 ? unselected[0] : null);
+    if (selectedServices.length <= 1) {
+      setUpsellSuggestion(null);
       setMatchedRule(null);
       return;
     }
@@ -446,7 +445,7 @@ export default function BookingPage({
       const antItems = rule.antecedent.split(',').map(s => s.trim()).filter(Boolean);
       const consItems = rule.consequent.split(',').map(s => s.trim()).filter(Boolean);
 
-      const isAntSelected = selectedDesignsList.length > 0 && antItems.every(ant =>
+      const isAntSelected = selectedDesignsList.length > 1 && antItems.every(ant =>
         selectedDesignsList.some(sd => checkItemMatch(ant, sd))
       );
 
@@ -947,7 +946,7 @@ export default function BookingPage({
                       <Sparkles className="w-3.5 h-3.5 text-[#FF5376] shrink-0" />
                       <span>
                         Menampilkan <strong>Rekomendasi Algoritma Apriori</strong> dengan nilai <em>Confidence</em> &amp; <em>Lift</em> tertinggi
-                        {selectedServices.length > 0 ? ' yang cocok dipadukan dengan pilihan Anda.' : '.'}
+                        {selectedServices.length > 1 ? ' yang cocok dipadukan dengan pilihan Anda.' : '.'}
                       </span>
                     </div>
                     <button

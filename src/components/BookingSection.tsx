@@ -54,9 +54,9 @@ export default function BookingSection({
     return acc + (design ? design.price : 0);
   }, 0);
 
-  // Dynamic Suggestion Engine (Client-side Apriori lookup)
+  // Dynamic Suggestion Engine (Client-side Apriori lookup - only when > 1 service is selected)
   useEffect(() => {
-    if (selectedServices.length === 0 || !recommendations || !recommendations.recommendations) {
+    if (selectedServices.length <= 1 || !recommendations || !recommendations.recommendations) {
       setUpsellSuggestion(null);
       return;
     }
