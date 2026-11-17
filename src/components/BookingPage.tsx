@@ -960,8 +960,8 @@ export default function BookingPage({
                 )}
               </div>
 
-              {/* Service Selection Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[410px] overflow-y-auto pr-1">
+              {/* Service Selection Grid (gallery-style large photos) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[760px] overflow-y-auto pr-1">
                 {filteredDesigns.map((design) => {
                   const isSelected = selectedServices.includes(design.id);
                   const recMeta = aprioriRecommendationMeta.get(design.id);
@@ -969,97 +969,109 @@ export default function BookingPage({
                     <div
                       key={design.id}
                       onClick={() => isSelected ? onRemoveService(design.id) : onAddService(design.id)}
-                      className={`p-3 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3 group relative ${
+                      className={`rounded-2xl border overflow-hidden transition-all cursor-pointer flex flex-col group relative ${
                         isSelected
-                          ? 'bg-[#FFF0F4] border-[#FF5376] ring-1 ring-[#FF5376] shadow-xs'
+                          ? 'bg-[#FFF0F4] border-[#FF5376] ring-2 ring-[#FF5376] shadow-md shadow-pink-100'
                           : recMeta?.isDynamicMatch
-                            ? 'bg-[#FFF8FA] border-[#FF5376]/70 ring-1 ring-[#FF5376]/30 hover:border-[#FF5376]'
-                            : 'bg-white border-[#FCE2E8] hover:border-[#FF5376]/50 hover:bg-[#FFFBFD]'
+                            ? 'bg-[#FFF8FA] border-[#FF5376]/70 ring-1 ring-[#FF5376]/30 hover:border-[#FF5376] hover:shadow-md hover:shadow-pink-100'
+                            : 'bg-white border-[#FCE2E8] hover:border-[#FF5376]/50 hover:shadow-md hover:shadow-pink-100'
                       }`}
                     >
-                      <div className="flex items-center gap-3 min-w-0">
-                        <div className="w-14 h-14 rounded-xl overflow-hidden bg-[#FFF0F4] shrink-0 border border-[#FCE2E8] relative">
-                          <img
-                            src={design.image}
-                            alt={design.name}
-                            referrerPolicy="no-referrer"
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
-                          {isSelected && (
-                            <div className="absolute inset-0 bg-[#FF5376]/30 flex items-center justify-center">
-                              <Check className="w-5 h-5 text-white stroke-[3]" />
+                      {/* Large Image Area (same ratio as gallery) */}
+                      <div className="relative aspect-4/3 overflow-hidden bg-[#FFF0F4]">
+                        <img
+                          src={design.image}
+                          alt={design.name}
+                          referrerPolicy="no-referrer"
+                          loading="lazy"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+
+                        {isSelected && (
+                          <div className="absolute inset-0 bg-[#FF5376]/25 flex items-center justify-center">
+                            <div className="w-12 h-12 rounded-full bg-[#FF5376] flex items-center justify-center shadow-lg">
+                              <Check className="w-7 h-7 text-white stroke-[3]" />
                             </div>
-                          )}
+                          </div>
+                        )}
+
+                        {/* Top-left badge */}
+                        <div className="absolute top-3 left-3 flex items-center gap-1.5 flex-wrap">
+                          {isSelected ? (
+                            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 inline-flex items-center gap-1 shadow-xs">
+                              <Check className="w-3 h-3 stroke-[3]" />
+                              <span>Terpilih</span>
+                            </span>
+                          ) : recMeta?.isDynamicMatch ? (
+                            <span className="text-[10px] font-extrabold text-white bg-gradient-to-r from-[#FF5376] to-[#FF3E66] px-2.5 py-1 rounded-full inline-flex items-center gap-1 shadow-md">
+                              <Sparkles className="w-3 h-3" />
+                              <span>Rekomendasi • {recMeta.confidence}% Cocok</span>
+                            </span>
+                          ) : recMeta ? (
+                            <span className="text-[10px] font-extrabold text-white bg-[#2D1F24]/90 backdrop-blur-xs px-2.5 py-1 rounded-full inline-flex items-center gap-1 shadow-md border border-[#FF5376]/50">
+                              <Sparkles className="w-3 h-3 text-[#FF5376]" />
+                              <span>Apriori {recMeta.confidence}%</span>
+                            </span>
+                          ) : null}
                         </div>
 
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-1.5 flex-wrap">
-                            {isSelected ? (
-                              <span className="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 inline-flex items-center gap-1">
-                                <Check className="w-2.5 h-2.5 stroke-[3]" />
-                                <span>Terpilih</span>
-                              </span>
-                            ) : recMeta?.isDynamicMatch ? (
-                              <span className="text-[9px] font-extrabold text-white bg-gradient-to-r from-[#FF5376] to-[#FF3E66] px-2 py-0.5 rounded-full inline-flex items-center gap-1 shadow-2xs">
-                                <Sparkles className="w-2.5 h-2.5" />
-                                <span>Rekomendasi • {recMeta.confidence}% Cocok</span>
-                              </span>
-                            ) : recMeta ? (
-                              <span className="text-[9px] font-bold text-[#FF5376] bg-[#FFF0F4] px-1.5 py-0.5 rounded-full border border-[#FCD5DF] inline-flex items-center gap-1">
-                                <Sparkles className="w-2.5 h-2.5" />
-                                <span>Apriori {recMeta.confidence}%</span>
-                              </span>
-                            ) : (
-                              <span className="text-[9px] font-bold text-[#FF5376] bg-white px-1.5 py-0.5 rounded border border-[#FCD5DF]">
-                                {design.category || 'Gaya'}
-                              </span>
-                            )}
-                            {design.tag && (
-                              <span className="text-[9px] font-semibold text-[#8C727D] bg-white/80 px-1.5 py-0.5 rounded border border-[#FCE2E8]">
-                                {design.tag}
-                              </span>
-                            )}
-                          </div>
-                          <h4 className="text-xs font-bold text-[#2D1F24] truncate mt-0.5">
-                            {design.name}
-                          </h4>
-                          <div className="flex items-center gap-2 mt-0.5">
-                            <span className="text-xs font-bold text-[#FF5376]">
-                              {formatRupiah(design.price)}
+                        {/* Bottom-left tag & category */}
+                        <div className="absolute bottom-3 left-3 flex items-center gap-1.5 flex-wrap">
+                          {design.tag && (
+                            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#FF5376] text-white shadow-xs uppercase tracking-wider">
+                              {design.tag}
                             </span>
-                            {recMeta && (
-                              <span className="text-[9px] text-[#8C727D] truncate">
-                                &bull; {recMeta.isDynamicMatch ? 'Pasangan ideal: ' : 'Sering bersama: '}<strong className="text-[#2D1F24] capitalize">{recMeta.pairedWith}</strong>
-                              </span>
-                            )}
-                          </div>
+                          )}
+                          {design.category && (
+                            <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-white/90 backdrop-blur-xs text-[#2D1F24] border border-[#FCE2E8]">
+                              {design.category}
+                            </span>
+                          )}
                         </div>
                       </div>
 
-                      <div className="shrink-0">
-                        <div className={`px-2.5 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 transition-all ${
-                          isSelected
-                            ? 'bg-[#FF5376] text-white shadow-2xs'
-                            : recMeta?.isDynamicMatch
-                              ? 'bg-gradient-to-r from-[#FF5376] to-[#FF3E66] text-white shadow-2xs'
-                              : 'border border-[#FCD5DF] text-[#8C727D] group-hover:border-[#FF5376] group-hover:text-[#FF5376] group-hover:bg-[#FFF0F4]'
-                        }`}>
-                          {isSelected ? (
-                            <>
-                              <Check className="w-3 h-3 stroke-[3]" />
-                              <span>Batal</span>
-                            </>
-                          ) : recMeta?.isDynamicMatch ? (
-                            <>
-                              <Plus className="w-3 h-3 stroke-[3]" />
-                              <span>Pasangkan</span>
-                            </>
-                          ) : (
-                            <>
-                              <Plus className="w-3 h-3" />
-                              <span>Pilih</span>
-                            </>
+                      {/* Card Body */}
+                      <div className="p-4 flex-1 flex flex-col justify-between gap-3">
+                        <div className="min-w-0">
+                          <h4 className="text-sm font-bold text-[#2D1F24] truncate">
+                            {design.name}
+                          </h4>
+                          {recMeta && (
+                            <p className="text-[10px] text-[#8C727D] truncate mt-0.5">
+                              {recMeta.isDynamicMatch ? 'Pasangan ideal: ' : 'Sering bersama: '}
+                              <strong className="text-[#2D1F24] capitalize">{recMeta.pairedWith}</strong>
+                            </p>
                           )}
+                        </div>
+
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-sm font-extrabold text-[#FF5376]">
+                            {formatRupiah(design.price)}
+                          </span>
+                          <div className={`px-3 py-1.5 rounded-full text-[11px] font-bold flex items-center gap-1 transition-all ${
+                            isSelected
+                              ? 'bg-[#FF5376] text-white shadow-2xs'
+                              : recMeta?.isDynamicMatch
+                                ? 'bg-gradient-to-r from-[#FF5376] to-[#FF3E66] text-white shadow-2xs'
+                                : 'border border-[#FCD5DF] text-[#8C727D] group-hover:border-[#FF5376] group-hover:text-[#FF5376] group-hover:bg-[#FFF0F4]'
+                          }`}>
+                            {isSelected ? (
+                              <>
+                                <Check className="w-3 h-3 stroke-[3]" />
+                                <span>Batal</span>
+                              </>
+                            ) : recMeta?.isDynamicMatch ? (
+                              <>
+                                <Plus className="w-3 h-3 stroke-[3]" />
+                                <span>Pasangkan</span>
+                              </>
+                            ) : (
+                              <>
+                                <Plus className="w-3 h-3" />
+                                <span>Pilih</span>
+                              </>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
